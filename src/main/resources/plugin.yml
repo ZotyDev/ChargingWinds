@@ -1,0 +1,4 @@
+name: ChargingWinds
+version: '1.0-SNAPSHOT'
+main: dev.zoty.chargingWinds.ChargingWinds
+api-version: '1.21'
