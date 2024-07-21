@@ -1,5 +1,6 @@
 package dev.zoty.chargingWinds;
 
+import dev.zoty.chargingWinds.listeners.WindChargeListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ChargingWinds extends JavaPlugin {
@@ -10,6 +11,7 @@ public final class ChargingWinds extends JavaPlugin {
 
         getLogger().info("Hello!!");
 
+        getServer().getPluginManager().registerEvents(new WindChargeListener(), this);
     }
 
     @Override
