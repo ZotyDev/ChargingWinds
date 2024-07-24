@@ -9,7 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.util.Vector;
 
 import java.util.Random;
 
@@ -21,17 +20,10 @@ public final class WindChargeListener implements Listener {
     public void onWindChargeLaunch(ProjectileLaunchEvent event) {
         Projectile projectile = event.getEntity();
 
-        // Checks if the projectile is a Wind Charge
         if (projectile instanceof WindCharge windCharge) {
             // Change the speed
             float speedFactor = ChargingWinds.getInstance().getSettings().getVelocity();
-            Vector newAcceleration;
-            newAcceleration = windCharge.getAcceleration();
-            newAcceleration.setX(newAcceleration.getX() * speedFactor);
-            newAcceleration.setY(newAcceleration.getY() * speedFactor);
-            newAcceleration.setZ(newAcceleration.getZ() * speedFactor);
-
-            windCharge.setAcceleration(newAcceleration);
+            windCharge.setAcceleration(windCharge.getAcceleration().multiply(speedFactor));
         }
     }
 
@@ -39,7 +31,8 @@ public final class WindChargeListener implements Listener {
     public void onWindChargeHit(EntityExplodeEvent event) {
         Entity entity = event.getEntity();
 
-        if (entity instanceof WindCharge windCharge) {
+        if (entity instanceof WindCharge) {
+            // Cancels the default explosion since we can't change it in the required ways.
             event.setCancelled(true);
 
             Location location = event.getLocation();
@@ -59,10 +52,7 @@ public final class WindChargeListener implements Listener {
                 world.spawnParticle(Particle.GUST_EMITTER_SMALL, location,1 );
 
                 // Create custom explosion
-                CustomExplosions.windExplode(
-                        (Player) windCharge.getShooter(),
-                        location, (float) ChargingWinds.getInstance().getSettings().getPower()
-                );
+                CustomExplosions.windExplode(location, ChargingWinds.getInstance().getSettings().getPower());
             }
         }
     }

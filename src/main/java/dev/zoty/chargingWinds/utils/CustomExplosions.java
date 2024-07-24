@@ -1,7 +1,6 @@
 package dev.zoty.chargingWinds.utils;
 
 import org.bukkit.FluidCollisionMode;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -10,7 +9,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +16,10 @@ import java.util.Random;
 public class CustomExplosions {
     private static final Random RANDOM = new Random();
 
-    public static void windExplode(@Nullable Entity source, Location location, float power) {
+    // This entire code was created using deobf from Fabric as the reference, I don't know how exact this is, but I
+    // tried my best at reimplementing the explosion mechanic from Minecraft 1.21. Sure, it could break after updates,
+    // but this plugin was created just to fulfill a 5-day task.
+    public static void windExplode(Location location, float power) {
         float q = power * 2.0F;
 
         double x = location.getX();
@@ -32,7 +33,6 @@ public class CustomExplosions {
                 Math.floor(y + (double) q + 1.0),
                 Math.floor(z + (double) q + 1.0)
         ));
-        Vector vector = new Vector(x, y, z);
         Iterator<Entity> iterator = entityList.iterator();
 
         while (true) {
@@ -78,11 +78,16 @@ public class CustomExplosions {
             dx *= ab;
             dy *= ab;
             dz *= ab;
-            Vector explosionVector = new Vector(dx, dy, dz);
+            // Magic value needed to mimic minecraft's exact behavior
+            // Note: I tried to find the reason behind this, but couldn't. At least it works, so we should not question
+            // it too much :D
+            dy /= 10.0;
+            Vector explosionVector = new Vector(dx, dy, dz).multiply(power);
             entity.setVelocity(entity.getVelocity().add(explosionVector));
         }
     }
 
+    // This method was implemented using Fabric deobf as reference.
     private static float getExposure(Location source, Entity entity) {
         BoundingBox box = entity.getBoundingBox();
         double d = 1.0 / ((box.getMaxX() - box.getMinX()) * 2.0 + 1.0);
@@ -124,6 +129,7 @@ public class CustomExplosions {
         return start + delta * (end - start);
     }
 
+    // This method was implemented using Fabric deobf as reference.
     private static float getKnockbackModifier(Entity entity) {
         boolean isFlying = false;
 
@@ -131,6 +137,7 @@ public class CustomExplosions {
             isFlying = player.isFlying();
         }
 
+        // This 1.2F value is not a magic number, it is the knockback modifier for wind charges
         return isFlying ? 0.0F : 1.2F;
     }
 }
