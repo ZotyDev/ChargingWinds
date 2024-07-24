@@ -1,97 +1,136 @@
 package dev.zoty.chargingWinds.utils;
 
-import dev.zoty.chargingWinds.player.PlayerHelper;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
+import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.*;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class CustomExplosions {
     private static final Random RANDOM = new Random();
 
-    public static void windExplode(@Nullable Player source, Location location, float power, float size, boolean sourceBounce) {
-        List<Entity> entities = new ArrayList<>(location.getWorld().getNearbyEntities(location, size, size, size));
+    public static void windExplode(@Nullable Entity source, Location location, float power) {
+        float q = power * 2.0F;
 
-        for (int i = 0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-            if (!shouldBeAffected(entity)) continue;
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+        List<Entity> entityList = (List<Entity>) location.getWorld().getNearbyEntities(new BoundingBox(
+                Math.floor(x - (double) q - 1.0),
+                Math.floor(y - (double) q - 1.0),
+                Math.floor(z - (double) q - 1.0),
+                Math.floor(x + (double) q + 1.0),
+                Math.floor(y + (double) q + 1.0),
+                Math.floor(z + (double) q + 1.0)
+        ));
+        Vector vector = new Vector(x, y, z);
+        Iterator<Entity> iterator = entityList.iterator();
 
-            Location entityLoc = entity.getLocation();
-            boolean flag = source != null && source.getUniqueId().equals(entity.getUniqueId());
+        while (true) {
+            Entity entity;
 
-            if (flag && !sourceBounce) continue;
+            double dx;
+            double dy;
+            double dz;
+            double dw;
+            double dv;
 
-            double distance = entity.getLocation().distanceSquared(entityLoc) / power;
-            double eyeHeight = entity instanceof LivingEntity ? ((LivingEntity) entity).getEyeHeight() : 1.53D;
+            do {
+                do {
+                    do {
+                        if (!iterator.hasNext()) {
+                            return;
+                        }
 
-            double dx = entityLoc.getX() - location.getX();
-            double dy = entityLoc.getY() + eyeHeight - location.getY();
-            double dz = entityLoc.getZ() - location.getZ();
-            double dq = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        entity = iterator.next();
+                    } while (entity instanceof ArmorStand || entity instanceof Warden);
 
-            if (dq != 0.0D) {
-                dx /= dq;
-                dy /= dq;
-                dz /= dq;
-                double face = (1.0D - distance) * power;
-                Vector vec = new Vector(dx * face, dy * face, dz * face);
+                    dw = Math.sqrt(entity.getLocation().distanceSquared(location)) / (double) q;
+                } while (!(dw <= 1.0));
 
-                if (flag) {
-                    PlayerHelper playerHelper = PlayerHelper.getPlayer(source);
-                    if (playerHelper == null) return;
-                    playerHelper.setWindChargedLocation(entity.getLocation());
+                dx = entity.getLocation().getX() - x;
+                dy = (entity instanceof TNTPrimed ? entity.getLocation().getY() : (entity instanceof LivingEntity ? ((LivingEntity) entity).getEyeLocation().getY() : entity.getLocation().getY())) - y;
+                dz = entity.getLocation().getZ() - z;
+                dv = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            } while (dv == 0.0);
+
+            dx /= dv;
+            dy /= dv;
+            dz /= dv;
+
+            double aa = (1.0 - dw) * (double) getExposure(location, entity) * (double) getKnockbackModifier(entity);
+            double ab;
+            if (entity instanceof LivingEntity livingEntity) {
+                ab = aa * (1.0 - livingEntity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue());
+            } else {
+                ab = aa;
+            }
+
+            dx *= ab;
+            dy *= ab;
+            dz *= ab;
+            Vector explosionVector = new Vector(dx, dy, dz);
+            entity.setVelocity(entity.getVelocity().add(explosionVector));
+        }
+    }
+
+    private static float getExposure(Location source, Entity entity) {
+        BoundingBox box = entity.getBoundingBox();
+        double d = 1.0 / ((box.getMaxX() - box.getMinX()) * 2.0 + 1.0);
+        double e = 1.0 / ((box.getMaxY() - box.getMinY()) * 2.0 + 1.0);
+        double f = 1.0 / ((box.getMaxZ() - box.getMinZ()) * 2.0 + 1.0);
+        double g = (1.0 - Math.floor(1.0 / d) * d) / 2.0;
+        double h = (1.0 - Math.floor(1.0 / f) * f) / 2.0;
+
+        if (d < 0.0 || e < 0.0 || f < 0.0) {
+            return 0.0F;
+        }
+
+        int i = 0;
+        int j = 0;
+        World world = entity.getWorld();
+        Vector sourceVector = source.toVector();
+
+        for (double k = 0.0; k <= 1.0; k += d) {
+            for (double l = 0.0; l <= 1.0; l += e) {
+                for (double m = 0.0; m <= 1.0; m += f) {
+                    double n = lerp(k, box.getMinX(), box.getMaxX());
+                    double o = lerp(l, box.getMinY(), box.getMaxY());
+                    double p = lerp(m, box.getMinZ(), box.getMaxZ());
+                    Vector vec3d = new Vector(n + g, o, p + h);
+
+                    RayTraceResult result = world.rayTrace(vec3d.toLocation(world), sourceVector.subtract(vec3d), sourceVector.distance(vec3d), FluidCollisionMode.NEVER, true, 0.0, entt -> entt == entity);
+
+                    if (result == null || result.getHitBlock() == null) {
+                        ++i;
+                    }
+                    ++j;
                 }
-
-                entity.setVelocity(entity.getVelocity().add(vec).multiply(power));
             }
         }
+        return (float) i / (float) j;
     }
 
-    public static void windExplodeSelf(Location location, Entity entity, float power) {
-        if (!shouldBeAffected(entity)) return;
-
-        Vector explosionVector = calculateExplosionVector(location, entity, power);
-        entity.setVelocity(entity.getVelocity().add(explosionVector).multiply(power));
+    private static double lerp(double delta, double start, double end) {
+        return start + delta * (end - start);
     }
 
-    private static boolean shouldBeAffected(Entity entity) {
-        if (entity instanceof Snowball) return false;
-        if (entity instanceof Player && ((Player) entity).getGameMode() == GameMode.SPECTATOR) return false;
+    private static float getKnockbackModifier(Entity entity) {
+        boolean isFlying = false;
 
-        return true;
-    }
-
-    private static Vector calculateExplosionVector(Location location, Entity entity, float power) {
-        Location entityLocation = entity.getLocation();
-
-        double distance = entityLocation.distanceSquared(entityLocation ) / power;
-        double eyeHeight = entity instanceof LivingEntity ? ((LivingEntity) entity).getEyeHeight() : 1.53D;
-
-        double dx = entityLocation.getX() - location.getX();
-        double dy = entityLocation.getY() + eyeHeight - location.getY();
-        double dz = entityLocation.getZ() - location.getZ();
-        double dq = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-        if (dq != 0.0D) {
-            dx /= dq;
-            dy /= dq;
-            dz /= dq;
-            double face = (1.0D - distance) * power;
-            return new Vector(dx * face, dy * face, dz * face);
-        } else {
-            return null;
+        if (entity instanceof Player player) {
+            isFlying = player.isFlying();
         }
-    }
 
-    public static double randomPositiveOrNegative(double number) {
-        return RANDOM.nextBoolean() ? number : (-number);
+        return isFlying ? 0.0F : 1.2F;
     }
 }

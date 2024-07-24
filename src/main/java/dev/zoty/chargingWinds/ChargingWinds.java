@@ -16,6 +16,8 @@ public final class ChargingWinds extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        saveDefaultConfig();
+
         // Plugin startup logic
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new WindChargeListener(), this);
