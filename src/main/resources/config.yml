@@ -1,3 +1,4 @@
 power: 1.2
 velocity: 1.0
-knockbackSize: 1.0
+particle: "GUST_EMITTER_SMALL"
+particle-amount: 1

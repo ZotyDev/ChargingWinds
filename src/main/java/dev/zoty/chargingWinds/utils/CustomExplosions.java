@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Random;
 
 public class CustomExplosions {
-    private static final Random RANDOM = new Random();
-
     // This entire code was created using deobf from Fabric as the reference, I don't know how exact this is, but I
     // tried my best at reimplementing the explosion mechanic from Minecraft 1.21. Sure, it could break after updates,
     // but this plugin was created just to fulfill a 5-day task.
@@ -108,9 +106,9 @@ public class CustomExplosions {
         for (double k = 0.0; k <= 1.0; k += d) {
             for (double l = 0.0; l <= 1.0; l += e) {
                 for (double m = 0.0; m <= 1.0; m += f) {
-                    double n = lerp(k, box.getMinX(), box.getMaxX());
-                    double o = lerp(l, box.getMinY(), box.getMaxY());
-                    double p = lerp(m, box.getMinZ(), box.getMaxZ());
+                    double n = MathUtils.lerp(k, box.getMinX(), box.getMaxX());
+                    double o = MathUtils.lerp(l, box.getMinY(), box.getMaxY());
+                    double p = MathUtils.lerp(m, box.getMinZ(), box.getMaxZ());
                     Vector vec3d = new Vector(n + g, o, p + h);
 
                     RayTraceResult result = world.rayTrace(vec3d.toLocation(world), sourceVector.subtract(vec3d), sourceVector.distance(vec3d), FluidCollisionMode.NEVER, true, 0.0, entt -> entt == entity);
@@ -123,10 +121,6 @@ public class CustomExplosions {
             }
         }
         return (float) i / (float) j;
-    }
-
-    private static double lerp(double delta, double start, double end) {
-        return start + delta * (end - start);
     }
 
     // This method was implemented using Fabric deobf as reference.

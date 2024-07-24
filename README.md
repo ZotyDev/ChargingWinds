@@ -25,3 +25,9 @@ Changes the velocity of the projectile, defaults to `1.0`.
 
 ## `power`
 Changes the explosion power, defaults to `1.2`.
+
+## `particle`
+Changes the particle that will spawn, defaults to `GUST_EMITTER_SMALL`.
+
+## `particle-amount`
+Changes the amount of particles that will spawn, defaults to `1`.

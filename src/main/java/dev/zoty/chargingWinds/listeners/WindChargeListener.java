@@ -3,6 +3,7 @@ package dev.zoty.chargingWinds.listeners;
 import dev.zoty.chargingWinds.ChargingWinds;
 import dev.zoty.chargingWinds.player.PlayerHelper;
 import dev.zoty.chargingWinds.utils.CustomExplosions;
+import dev.zoty.chargingWinds.utils.MathUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -39,6 +40,8 @@ public final class WindChargeListener implements Listener {
             World world = location.getWorld();
 
             if (world != null) {
+                float power = ChargingWinds.getInstance().getSettings().getPower();
+
                 // Play the sound
                 world.playSound(
                         location,
@@ -49,14 +52,24 @@ public final class WindChargeListener implements Listener {
                 );
 
                 // Add particles
-                world.spawnParticle(Particle.GUST_EMITTER_SMALL, location,1 );
+                Particle particle = ChargingWinds.getInstance().getSettings().getParticle();
+                int particleAmount = ChargingWinds.getInstance().getSettings().getParticleAmount();
+                // If there are more than 1 particle, spread them
+                if (particleAmount > 1) {
+                    for (int i = 0; i < particleAmount; i++) {
+                        world.spawnParticle(particle, location, 1, MathUtils.randomParticleOffset(power), MathUtils.randomParticleOffset(power), MathUtils.randomParticleOffset(power));
+                    }
+                } else {
+                    world.spawnParticle(particle, location,1 );
+                }
 
-                // Create custom explosion
-                CustomExplosions.windExplode(location, ChargingWinds.getInstance().getSettings().getPower());
+                // Do custom explosion
+                CustomExplosions.windExplode(location, power);
             }
         }
     }
 
+    //
     @EventHandler
     public void onWindChargeDamage(EntityDamageEvent event) {
         if (event.getCause() != EntityDamageEvent.DamageCause.FALL) return;
@@ -65,7 +78,7 @@ public final class WindChargeListener implements Listener {
         PlayerHelper playerHelper = PlayerHelper.getPlayer(entity.getUniqueId());
         if (playerHelper == null) return;
         if (playerHelper.hasWindChargeEffect()) {
-            event.setCancelled(true);
+            event.setDamage(0.0D);
         }
     }
 }

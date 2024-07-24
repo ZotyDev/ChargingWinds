@@ -48,7 +48,7 @@ public class PlayerHelper {
             public void run() {
                 setWindChargedLocation();
             }
-        }.runTaskLater(ChargingWinds.getInstance(), 60L);
+        }.runTaskLater(ChargingWinds.getInstance(), 40L);
     }
 
     private void setWindChargedLocation() {
