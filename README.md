@@ -15,3 +15,13 @@ A Minecraft Spigot plugin for 1.21 that lets you customize the Wind Charge proje
 
 > [!CAUTION]
 > I do not recommend this plugin to be used on an important server, I just created it for a 5-day task, so I cannot guarantee it will be maintained.
+
+# Config
+
+You can set the following values in the config:
+
+## `velocity`
+Changes the velocity of the projectile, defaults to `1.0`.
+
+## `power`
+Changes the explosion power, defaults to `1.2`.
