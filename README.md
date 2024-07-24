@@ -1,6 +1,6 @@
 <a href="#">
   <p align="center">
-    <img src="https://raw.githubusercontent.com/ZotyDev/ChargindWinds/main/branding/title.png" alt="ChargingWinds Title">
+    <img src="https://raw.githubusercontent.com/ZotyDev/ChargingWinds/main/branding/title.png" alt="ChargingWinds Title">
   </p>
 </a>
 
