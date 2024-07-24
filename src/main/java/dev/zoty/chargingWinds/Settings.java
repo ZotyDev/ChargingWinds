@@ -2,8 +2,9 @@ package dev.zoty.chargingWinds;
 
 import org.bukkit.Particle;
 
+// Helper to manage configs, I called it Settings because this way there are no conflicts with .getConfig().
+// The methods inside this class are wrappers that are intended to be used instead of, i.e. .getConfig().getDouble().
 public class Settings {
-
     private static final String POWER = "power";
     private static final Double DEFAULT_POWER = 1.2D;
     private static final String VELOCITY = "velocity";
@@ -21,6 +22,8 @@ public class Settings {
         return ((Double) ChargingWinds.getInstance().getConfig().getDouble(VELOCITY, DEFAULT_VELOCITY)).floatValue();
     }
 
+    // Will convert the string into a valid Particle, if the String doesn't represent a valid particle then it returns
+    // the default particle. If the default particle is invalid there is not much we can do.
     public Particle getParticle() {
         String particleString = ChargingWinds.getInstance().getConfig().getString(PARTICLE, DEFAULT_PARTICLE).toUpperCase();
         try {

@@ -11,20 +11,15 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PlayerHelper {
-    private static Map<UUID, PlayerHelper> players = new HashMap<>();
+    private static final Map<UUID, PlayerHelper> players = new HashMap<>();
 
     private final Player player;
     private Location windChargedLocation = null;
-    private boolean hasHit = false;
     private BukkitTask task = null;
 
     public PlayerHelper(Player player) {
         this.player = player;
         players.put(player.getUniqueId(), this);
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public static PlayerHelper getPlayer(UUID uuid) {
@@ -35,10 +30,7 @@ public class PlayerHelper {
         return players.get(player.getUniqueId());
     }
 
-    public Location getWindChargedLocation() {
-        return windChargedLocation;
-    }
-
+    // Will set the wind charged location, after 40 ticks the effect wears off.
     public void setWindChargedLocation(Location windChargeLocation) {
         this.windChargedLocation = windChargeLocation;
         if (task != null && !task.isCancelled()) {
@@ -55,7 +47,9 @@ public class PlayerHelper {
         this.windChargedLocation = null;
     }
 
-    public boolean hasWindChargeEffect() {
+    // Check if player should be damaged or not.
+    public boolean hasWindChargedEffect() {
+        // Wind charged effect will only be applied if the fall distance is less than 1.5 blocks down the origin.
         return this.windChargedLocation != null && this.windChargedLocation.getY() - 1.5D <= player.getLocation().getY();
     }
 }

@@ -42,7 +42,7 @@ public final class WindChargeListener implements Listener {
             if (world != null) {
                 float power = ChargingWinds.getInstance().getSettings().getPower();
 
-                // Play the sound
+                // Play the sound.
                 world.playSound(
                         location,
                         Sound.ENTITY_WIND_CHARGE_WIND_BURST,
@@ -54,7 +54,7 @@ public final class WindChargeListener implements Listener {
                 // Add particles
                 Particle particle = ChargingWinds.getInstance().getSettings().getParticle();
                 int particleAmount = ChargingWinds.getInstance().getSettings().getParticleAmount();
-                // If there are more than 1 particle, spread them
+                // If there are more than 1 particle, spread them.
                 if (particleAmount > 1) {
                     for (int i = 0; i < particleAmount; i++) {
                         world.spawnParticle(particle, location, 1, MathUtils.randomParticleOffset(power), MathUtils.randomParticleOffset(power), MathUtils.randomParticleOffset(power));
@@ -63,21 +63,30 @@ public final class WindChargeListener implements Listener {
                     world.spawnParticle(particle, location,1 );
                 }
 
-                // Do custom explosion
+                // Do custom explosion.
                 CustomExplosions.windExplode(location, power);
             }
         }
     }
 
-    //
+    // Will reduce fall damage if it originates from the wind charge.
     @EventHandler
     public void onWindChargeDamage(EntityDamageEvent event) {
-        if (event.getCause() != EntityDamageEvent.DamageCause.FALL) return;
+        if (event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+            return;
+        }
+
         Entity entity = event.getEntity();
-        if (!(entity instanceof Player)) return;
+
+        if (!(entity instanceof Player)) {
+            return;
+        }
+
         PlayerHelper playerHelper = PlayerHelper.getPlayer(entity.getUniqueId());
+
         if (playerHelper == null) return;
-        if (playerHelper.hasWindChargeEffect()) {
+
+        if (playerHelper.hasWindChargedEffect()) {
             event.setDamage(0.0D);
         }
     }

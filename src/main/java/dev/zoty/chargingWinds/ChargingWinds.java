@@ -18,10 +18,12 @@ public final class ChargingWinds extends JavaPlugin {
 
         saveDefaultConfig();
 
-        // Plugin startup logic
+        // Plugin startup logic.
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new WindChargeListener(), this);
 
+        // Helper that will register all players inside PlayerHelper, that way we can more easily manage the wind
+        // charged effect to reduce fall damage.
         pluginManager.registerEvents(new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent event) {

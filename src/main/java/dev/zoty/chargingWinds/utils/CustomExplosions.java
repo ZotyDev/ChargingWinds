@@ -1,5 +1,6 @@
 package dev.zoty.chargingWinds.utils;
 
+import dev.zoty.chargingWinds.player.PlayerHelper;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -50,7 +51,7 @@ public class CustomExplosions {
                         }
 
                         entity = iterator.next();
-                    } while (entity instanceof ArmorStand || entity instanceof Warden);
+                    } while (entity instanceof ArmorStand || entity instanceof Warden); // The only entities that are immune to explosions
 
                     dw = Math.sqrt(entity.getLocation().distanceSquared(location)) / (double) q;
                 } while (!(dw <= 1.0));
@@ -82,6 +83,16 @@ public class CustomExplosions {
             dy /= 10.0;
             Vector explosionVector = new Vector(dx, dy, dz).multiply(power);
             entity.setVelocity(entity.getVelocity().add(explosionVector));
+
+            // Additional logic to  handle
+            if (entity instanceof Player player) {
+                PlayerHelper playerHelper = PlayerHelper.getPlayer(player);
+                if (playerHelper == null) {
+                    return;
+                } else {
+                    playerHelper.setWindChargedLocation(player.getLocation());
+                }
+            }
         }
     }
 
