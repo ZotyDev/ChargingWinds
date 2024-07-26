@@ -1,6 +1,7 @@
 package dev.zoty.chargingWinds.listeners;
 
 import dev.zoty.chargingWinds.ChargingWinds;
+import dev.zoty.chargingWinds.Settings;
 import dev.zoty.chargingWinds.player.PlayerHelper;
 import dev.zoty.chargingWinds.utils.CustomExplosions;
 import dev.zoty.chargingWinds.utils.MathUtils;
@@ -23,7 +24,7 @@ public final class WindChargeListener implements Listener {
 
         if (projectile instanceof WindCharge windCharge) {
             // Change the speed
-            float speedFactor = ChargingWinds.getInstance().getSettings().getVelocity();
+            float speedFactor = Settings.getVelocity();
             windCharge.setAcceleration(windCharge.getAcceleration().multiply(speedFactor));
         }
     }
@@ -40,7 +41,7 @@ public final class WindChargeListener implements Listener {
             World world = location.getWorld();
 
             if (world != null) {
-                float power = ChargingWinds.getInstance().getSettings().getPower();
+                float power = Settings.getPower();
 
                 // Play the sound.
                 world.playSound(
@@ -52,8 +53,8 @@ public final class WindChargeListener implements Listener {
                 );
 
                 // Add particles
-                Particle particle = ChargingWinds.getInstance().getSettings().getParticle();
-                int particleAmount = ChargingWinds.getInstance().getSettings().getParticleAmount();
+                Particle particle = Settings.getParticle();
+                int particleAmount = Settings.getParticleAmount();
                 // If there are more than 1 particle, spread them.
                 if (particleAmount > 1) {
                     for (int i = 0; i < particleAmount; i++) {

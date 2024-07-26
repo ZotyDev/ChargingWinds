@@ -12,7 +12,6 @@ import org.bukkit.util.Vector;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 public class CustomExplosions {
     // This entire code was created using deobf from Fabric as the reference, I don't know how exact this is, but I

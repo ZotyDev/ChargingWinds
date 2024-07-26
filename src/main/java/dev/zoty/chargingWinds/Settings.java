@@ -14,17 +14,17 @@ public class Settings {
     private static final String PARTICLE_AMOUNT = "particle-amount";
     private static final int DEFAULT_PARTICLE_AMOUNT = 1;
 
-    public Float getPower() {
+    public static float getPower() {
         return ((Double) ChargingWinds.getInstance().getConfig().getDouble(POWER, DEFAULT_POWER)).floatValue();
     }
 
-    public Float getVelocity() {
+    public static float getVelocity() {
         return ((Double) ChargingWinds.getInstance().getConfig().getDouble(VELOCITY, DEFAULT_VELOCITY)).floatValue();
     }
 
     // Will convert the string into a valid Particle, if the String doesn't represent a valid particle then it returns
     // the default particle. If the default particle is invalid there is not much we can do.
-    public Particle getParticle() {
+    public static Particle getParticle() {
         String particleString = ChargingWinds.getInstance().getConfig().getString(PARTICLE, DEFAULT_PARTICLE).toUpperCase();
         try {
             return Particle.valueOf(particleString);
@@ -35,7 +35,7 @@ public class Settings {
         }
     }
 
-    public int getParticleAmount() {
+    public static int getParticleAmount() {
         int particleAmount = ChargingWinds.getInstance().getConfig().getInt(PARTICLE_AMOUNT, DEFAULT_PARTICLE_AMOUNT);
         if (particleAmount < 1) {
             return  DEFAULT_PARTICLE_AMOUNT;

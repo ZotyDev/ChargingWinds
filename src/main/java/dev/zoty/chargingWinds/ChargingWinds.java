@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ChargingWinds extends JavaPlugin {
     private static ChargingWinds instance;
-    private Settings settings;
 
     @Override
     public void onEnable() {
@@ -18,7 +17,6 @@ public final class ChargingWinds extends JavaPlugin {
 
         saveDefaultConfig();
 
-        // Plugin startup logic.
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(new WindChargeListener(), this);
 
@@ -31,17 +29,11 @@ public final class ChargingWinds extends JavaPlugin {
             }
         }, instance);
 
-        this.settings = new Settings();
-
         getLogger().info(getName() + " successfully enabled!");
     }
 
     public static ChargingWinds getInstance() {
         return instance;
-    }
-
-    public Settings getSettings() {
-        return settings;
     }
 
     @Override
